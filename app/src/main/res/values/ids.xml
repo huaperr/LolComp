@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="txtPassword" type="id" />
+    <item name="googleSignInButton" type="id" />
+    <item name="error_button" type="id" />
+</resources>
