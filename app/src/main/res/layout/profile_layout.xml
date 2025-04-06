@@ -75,11 +75,10 @@
             android:id="@+id/user_textRank"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cargando rango..."
+            android:layout_marginTop="4dp"
             android:gravity="center"
-            android:textSize="20sp"
             android:textColor="@color/white"
-            android:layout_marginTop="4dp" />
+            android:textSize="20sp" />
 
         <!-- User Rank Image -->
         <ImageView

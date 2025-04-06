@@ -23,7 +23,9 @@
         android:hint="Name"
         android:layout_margin="10dp"
         android:inputType="textPersonName"
-        android:minHeight="48dp"/>
+        android:minHeight="48dp"
+        android:background="@color/white"
+        android:textColor="@color/white"/>
 
     <EditText
         android:id="@+id/txtLastName"
@@ -33,7 +35,10 @@
         android:hint="LastName"
         android:layout_margin="10dp"
         android:inputType="textPersonName"
-        android:minHeight="48dp" />
+        android:minHeight="48dp"
+        android:background="@color/white"
+        android:textColor="@color/white"/>
+        />
 
     <EditText
         android:id="@+id/txtEmail"
@@ -43,7 +48,9 @@
         android:hint="Email"
         android:layout_margin="10dp"
         android:inputType="textEmailAddress"
-        android:minHeight="48dp" />
+        android:minHeight="48dp"
+        android:background="@color/white"
+        android:textColor="@color/white"/>/>
 
     <EditText
         android:id="@+id/txtPassword"
@@ -53,7 +60,9 @@
         android:hint="Password"
         android:layout_margin="10dp"
         android:inputType="textPassword"
-        android:minHeight="48dp" />
+        android:minHeight="48dp"
+        android:background="@color/white"
+        android:textColor="@color/white"/>
 
     <Button
         android:id="@+id/butRegister"
