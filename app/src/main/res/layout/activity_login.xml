@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:indeterminate="true"/>
+        android:indeterminate="true"
+        app:indicatorColor="@color/colorPrimary"/>
 
     <EditText
         android:id="@+id/txtUser"
@@ -24,7 +25,9 @@
         android:layout_margin="10dp"
         android:layout_marginTop="20dp"
         android:inputType="textEmailAddress"
-        android:text="Mail..."/>
+        android:text="Mail..."
+        app:boxBackgroundColor="@color/white"
+        android:textColor="@color/white"/>
 
     <EditText
         android:id="@+id/txtPassword"
@@ -33,6 +36,8 @@
         android:ems="10"
         android:layout_margin="10dp"
         android:inputType="textPassword"
+        app:boxBackgroundColor="@color/white"
+        android:textColor="@color/white"
         />
 
     <Button
@@ -50,6 +55,7 @@
         android:layout_margin="10dp"
         android:gravity="center"
         android:text="Registrarse"
+        android:textColor="@color/white"
         />
 
     <Button

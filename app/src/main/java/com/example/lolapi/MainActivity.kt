@@ -1,6 +1,7 @@
     package com.example.lolapi// com.example.android.MainActivity.kt
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -27,6 +28,17 @@ import retrofit2.http.Query
 import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.*
+import com.example.android.Maestry
+import com.example.android.Rank
+import kotlin.math.log
 
     interface RiotGamesAPI {
         @GET("riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}")
@@ -41,9 +53,20 @@ import com.google.firebase.remoteconfig.remoteConfigSettings
             @Path("puuid") puuid: String,
             @Query("api_key") apiKey: String
         ): Call<Summoner>
+
+        @GET("lol/league/v4/entries/by-puuid/{encryptedPUUID}")
+        fun getRankByPuuid(
+            @Path("encryptedPUUID") Rpuuid: String,
+            @Query("api_key") apiKey: String
+        ): Call<List<Rank>>
+
+        @GET("lol/champion-mastery/v4/champion-masteries/by-puuid/{puuid}/top")
+        fun getTopChampionMasteries(
+            @Path("puuid") puuid: String,
+            @Query("api_key") apiKey: String
+        ): Call<List<Maestry>>
     }
 
-    // Define más llamadas a la API según tus necesidades
 
 
 
@@ -97,8 +120,8 @@ a
         RestoreMenuButtons(this)
     }
 
-    fun SetProfile(nombreCompleto: String, ma: MainActivity) {
-        val parts = nombreCompleto.split("#")
+    fun SetProfile(nickName: String, ma: MainActivity) {
+        val parts = nickName.split("#")
         if (parts.size != 2) {
             Toast.makeText(ma, "Formato inválido. Usa Nombre#TAG", Toast.LENGTH_SHORT).show()
             return
@@ -119,6 +142,8 @@ a
 
         val userNameText: TextView = findViewById(R.id.user_name)
         val userLevelText: TextView = findViewById(R.id.user_level)
+        val userRankText: TextView = findViewById(R.id.user_textRank)
+        val userRank: ImageView = findViewById(R.id.user_rank)
         val userIcon: ImageView = findViewById(R.id.user_icon)
 
         val requestOptions = RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -131,7 +156,7 @@ a
                         if (account != null) {
                             val puuid = account.puuid
 
-                            // Segunda llamada: obtener ícono y nivel
+                            // segunda call, icono y nivel
                             val summonerRetrofit = Retrofit.Builder()
                                 .baseUrl("https://euw1.api.riotgames.com/") // Usa la región correcta
                                 .addConverterFactory(GsonConverterFactory.create())
@@ -141,24 +166,108 @@ a
 
                             summonerAPI.getSummonerByPuuid(puuid, apiKey)
                                 .enqueue(object : Callback<Summoner> {
-                                    override fun onResponse(call: Call<Summoner>, response: Response<Summoner>) {
+                                    override fun onResponse(
+                                        call: Call<Summoner>,
+                                        response: Response<Summoner>
+                                    ) {
                                         if (response.isSuccessful) {
                                             val summoner = response.body()
                                             if (summoner != null) {
-                                                userNameText.text = summoner.name
-                                                userLevelText.text = "Nivel: ${summoner.summonerLevel}"
-                                                val iconUrl = "https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/${summoner.profileIconId}.png"
-                                                Glide.with(ma).load(iconUrl).apply(requestOptions).into(userIcon)
+                                                userNameText.text = account.gameName
+                                                Log.d("API_RESPONSE", "Nombre: ${summoner.name}")
+                                                userLevelText.text =
+                                                    "Nivel: ${summoner.summonerLevel}"
+                                                val iconUrl =
+                                                    "https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/${summoner.profileIconId}.png"
+                                                Glide.with(ma).load(iconUrl).apply(requestOptions)
+                                                    .into(userIcon)
                                             }
                                         } else {
                                             userLevelText.text = "No se pudo obtener el perfil"
                                         }
                                     }
 
+
+
                                     override fun onFailure(call: Call<Summoner>, t: Throwable) {
                                         userLevelText.text = "Error de conexión"
                                     }
                                 })
+
+                            val rankAPI = summonerRetrofit.create(RiotGamesAPI::class.java)
+
+                            rankAPI.getRankByPuuid(puuid, apiKey)
+                                .enqueue(object : Callback<List<Rank>> {
+                                    override fun onResponse(call: Call<List<Rank>>, response: Response<List<Rank>>) {
+                                        if (response.isSuccessful) {
+                                            val ranks = response.body()
+                                            if (!ranks.isNullOrEmpty()) {
+                                                val soloQ = ranks.find { it.queueType == "RANKED_SOLO_5x5" }
+                                                if (soloQ != null) {
+                                                    val rankText = "Rango: ${soloQ.tier} ${soloQ.rank} - ${soloQ.leaguePoints}LP"
+                                                    userRankText.text = "${userRankText.text}\n$rankText"
+
+                                                    val rankImage = when (soloQ.tier.lowercase()) {
+                                                        "iron" -> R.drawable.iron
+                                                        "bronze" -> R.drawable.bronze
+                                                        "silver" -> R.drawable.silver
+                                                        "gold" -> R.drawable.gold
+                                                        "platinum" -> R.drawable.platinum
+                                                        "diamond" -> R.drawable.diamond
+                                                        "master" -> R.drawable.master
+                                                        "grandmaster" -> R.drawable.grandmaster
+                                                        "challenger" -> R.drawable.challenger
+                                                        else -> R.drawable.unranked // Imagen predeterminada en caso de que no se encuentre el rango
+                                                    }
+
+                                                    userRank.setImageResource(rankImage)
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    override fun onFailure(call: Call<List<Rank>>, t: Throwable) {
+                                        Log.e("RankFetch", "Error al obtener el rango", t)
+                                    }
+                                })
+
+                                val riotGamesAPI = retrofit.create(RiotGamesAPI::class.java)
+
+                                riotGamesAPI.getTopChampionMasteries(puuid, apiKey)
+                                    .enqueue(object : Callback<List<Maestry>> {
+                                        override fun onResponse(
+                                            call: Call<List<Maestry>>,
+                                            response: Response<List<Maestry>>
+                                        ) {
+                                            if (response.isSuccessful) {
+                                                val championMasteries = response.body()
+                                                if (championMasteries != null && championMasteries.isNotEmpty()) {
+
+                                                    for (champion in championMasteries) {
+                                                        Log.d(
+                                                            "Champion Mastery",
+                                                            "Champion ID: ${champion.championId}"
+                                                        )
+
+                                                    }
+                                                }
+                                            }
+
+                                        }
+
+                                        override fun onFailure(
+                                            call: Call<List<Maestry>>,
+                                            t: Throwable
+                                        ) {
+                                            Log.e(
+                                                "Champion Mastery",
+                                                "Error en la llamada a la API",
+                                                t
+                                            )
+                                        }
+                                    })
+
+
 
                         } else {
                             userLevelText.text = "Cuenta no encontrada"
@@ -177,7 +286,7 @@ a
     // Menu ------------------------------------------------------------------------------------------------------------------------
     private fun showPopupMenu(view: View) {
         val popupMenu = PopupMenu(this, view)
-        popupMenu.inflate(R.menu.menu_settings)
+        popupMenu.inflate(R.menu.menu_settings)  // Asegúrate de que este archivo de menú exista
 
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -188,14 +297,14 @@ a
                 }
 
                 R.id.action_home -> {
-                    onBackPressed()
+                    onBackPressed()  // Volver a la pantalla anterior
                     true
                 }
-                // Otras opciones
                 else -> false
             }
         }
 
+        // Mostrar el menú en pantalla
         popupMenu.show()
     }
 
@@ -220,13 +329,19 @@ a
 
         val menu_search: SearchView = findViewById(R.id.search_view)
         menu_search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query.isNullOrEmpty()) {
+                    Toast.makeText(this@MainActivity, "Por favor ingrese un nombre de jugador", Toast.LENGTH_SHORT).show()
+                    return false
+                }
+
                 // Realizar la búsqueda cuando se presiona Enter o se confirma la búsqueda
                 SetProfile(query, ma)
                 return true
             }
 
-            override fun onQueryTextChange(p0: String?): Boolean {
+            override fun onQueryTextChange(newText: String?): Boolean {
+
                 return false
             }
         })

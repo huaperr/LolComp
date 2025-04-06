@@ -2,4 +2,7 @@
     <string name="app_name">lolapi</string>
     <string name="User" />
     <string name="default_web_client_id" />
+
+    <string name="user_icon_desc">Icono de usuario</string>
+    <string name="user_rank_desc">Icono de rango de usuario</string>
 </resources>

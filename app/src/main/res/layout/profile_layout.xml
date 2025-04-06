@@ -1,56 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:padding="16dp">
 
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/start_toolbar"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:tooltipText="mmmm"
-        >
+        android:orientation="vertical">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/start_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="Summoner Profile"
+            app:subtitle="League of Legends"
+            android:backgroundTint="@color/white"
+            android:background="@color/white"
+            android:padding="16dp">
+
+            <!-- Menu Button -->
+            <ImageView
+                android:id="@+id/btn_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/menu"
+                android:layout_gravity="start|center"
+                android:paddingEnd="16dp" />
+
+            <!-- Search View -->
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/search_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center"
+                android:backgroundTint="@color/white"/>
+        </com.google.android.material.appbar.MaterialToolbar>
+
+        <!-- User Icon -->
         <ImageView
-            android:id="@+id/btn_menu"
-            android:layout_width="wrap_content"
+            android:id="@+id/user_icon"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/menu"
-            android:layout_gravity="start|center"
-            android:paddingEnd="16dp"
-            />
-        <SearchView
-            android:id="@+id/search_view"
-            android:layout_width="wrap_content"
+            android:src="@drawable/profile_icon"
+            android:minHeight="250dp"
+            android:contentDescription="@string/user_icon_desc"
+            android:layout_marginTop="16dp" />
+
+        <!-- User Name -->
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|center"
-            />
-    </androidx.appcompat.widget.Toolbar>
+            android:text="Cargando el nombre..."
+            android:gravity="center"
+            android:textSize="32sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="8dp" />
 
-    <ImageView
-        android:id="@+id/user_icon"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/profile_icon"
-        android:minHeight="250dp"
-        >
-    </ImageView>
-    <TextView
-        android:id="@+id/user_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cargando el nombre..."
-        android:gravity="center"
-        android:textSize="50dp"
-        />
-    <TextView
-        android:id="@+id/user_level"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cargando el nivel..."
-        android:gravity="center"
-        android:textSize="25dp"
-        />
+        <!-- User Level -->
+        <TextView
+            android:id="@+id/user_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cargando el nivel..."
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="4dp" />
 
-</LinearLayout>
+        <!-- User Rank -->
+        <TextView
+            android:id="@+id/user_textRank"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cargando rango..."
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="4dp" />
+
+        <!-- User Rank Image -->
+        <ImageView
+            android:id="@+id/user_rank"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="150dp"
+            android:src="@drawable/profile_icon"
+            android:contentDescription="@string/user_rank_desc"
+            android:layout_marginTop="16dp" />
+    </LinearLayout>
+
+</ScrollView>
